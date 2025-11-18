@@ -4,6 +4,7 @@ class Player
 {
     private $level;
 
+    // Constructeur
     public function __construct($level)
     {
         if (!is_int($level)) {
@@ -12,15 +13,20 @@ class Player
         $this->level = $level;
     }
 
+    // Accesseur (getter)
     public function getLevel()
     {
         return $this->level;
     }
 
+    // Mutateur (setter)
     public function setLevel($level)
     {
         if (!is_int($level)) {
             throw new InvalidArgumentException('Level must be an integer.');
+        }
+        if ($level < 0) {
+            trigger_error('Le niveau doit être positif.', E_USER_ERROR);
         }
         $this->level = $level;
     }
@@ -28,7 +34,6 @@ class Player
 
 class Encounter
 {
-    // Constantes de classe
     const RESULT_WINNER = 1;
     const RESULT_LOSER = -1;
     const RESULT_DRAW = 0;
@@ -62,7 +67,7 @@ echo sprintf(
     Encounter::probabilityAgainst($greg, $jade) * 100
 ) . PHP_EOL;
 
-// Imaginons que Greg l’emporte tout de même.
+// Imaginons que Greg l’emporte
 Encounter::setNewLevel($greg, $jade, Encounter::RESULT_WINNER);
 Encounter::setNewLevel($jade, $greg, Encounter::RESULT_LOSER);
 
