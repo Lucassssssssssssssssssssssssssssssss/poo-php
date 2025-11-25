@@ -109,6 +109,24 @@ class QueuingPlayer extends Player
     }
 }
 
+class BlitzPlayer extends Player
+{
+    public function __construct(string $name, float $ratio = 1200.0)
+    {
+        parent::__construct($name, $ratio);
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function updateRatioAgainst(Player $player, int $result)
+    {
+        $this->ratio += 4 * 32 * ($result - $this->probabilityAgainst($player));
+    }
+}
+
 $greg = new SimplePlayer('greg', 400);
 $jade = new SimplePlayer('jade', 476);
 
@@ -116,5 +134,14 @@ $lobby = new Lobby();
 $lobby->addPlayers($greg, $jade);
 
 var_dump($lobby->findOponents($lobby->queuingPlayers[0]));
+
+$greg = new BlitzPlayer('greg');
+$jade = new BlitzPlayer('jade', 1300);
+
+echo $greg->getName() . " ratio: " . $greg->getRatio() . PHP_EOL;
+echo $jade->getName() . " ratio: " . $jade->getRatio() . PHP_EOL;
+
+$greg->updateRatioAgainst($jade, 1);
+echo "Après match, ratio de greg: " . $greg->getRatio() . PHP_EOL;
 
 exit(0);
