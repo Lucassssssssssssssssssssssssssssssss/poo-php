@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-class Lobby
+final class Lobby
 {
     /** @var QueuingPlayer[] */
     public $queuingPlayers = [];
 
-    public function findOponents(QueuingPlayer $player): array
+    public function findOponents(QueuingPlayer $player)
     {
         $minLevel = round($player->getRatio() / 100);
         $maxLevel = $minLevel + $player->getRange();
@@ -46,7 +46,7 @@ class Lobby
     }
 }
 
-class Player
+abstract class Player
 {
     protected $name;
     protected $ratio;
@@ -57,24 +57,29 @@ class Player
         $this->ratio = $ratio;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
+    abstract public function getName(): string;
 
-    private function probabilityAgainst(self $player): float
+    protected function probabilityAgainst(Player $player)
     {
         return 1 / (1 + (10 ** (($player->getRatio() - $this->getRatio()) / 400)));
     }
 
-    public function updateRatioAgainst(self $player, int $result): void
+    public function updateRatioAgainst(Player $player, int $result)
     {
         $this->ratio += 32 * ($result - $this->probabilityAgainst($player));
     }
 
-    public function getRatio(): float
+    public function getRatio()
     {
         return $this->ratio;
+    }
+}
+
+class SimplePlayer extends Player
+{
+    public function getName(): string
+    {
+        return $this->name;
     }
 }
 
@@ -88,7 +93,12 @@ class QueuingPlayer extends Player
         $this->range = $range;
     }
 
-    public function getRange(): int
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getRange()
     {
         return $this->range;
     }
@@ -99,8 +109,8 @@ class QueuingPlayer extends Player
     }
 }
 
-$greg = new Player('greg', 400);
-$jade = new Player('jade', 476);
+$greg = new SimplePlayer('greg', 400);
+$jade = new SimplePlayer('jade', 476);
 
 $lobby = new Lobby();
 $lobby->addPlayers($greg, $jade);
