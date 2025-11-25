@@ -13,27 +13,32 @@ declare(strict_types=1);
 
 class Lobby
 {
-    /** @var array<QueuingPlayer> */
-    public array $queuingPlayers = [];
+    /** @var QueuingPlayer[] */
+    public $queuingPlayers = [];
 
     public function findOponents(QueuingPlayer $player): array
     {
         $minLevel = round($player->getRatio() / 100);
         $maxLevel = $minLevel + $player->getRange();
 
-        return array_filter($this->queuingPlayers, static function (QueuingPlayer $potentialOponent) use ($minLevel, $maxLevel, $player) {
-            $playerLevel = round($potentialOponent->getRatio() / 100);
+        return array_filter(
+            $this->queuingPlayers,
+            function (QueuingPlayer $potentialOponent) use ($minLevel, $maxLevel, $player) {
+                $playerLevel = round($potentialOponent->getRatio() / 100);
 
-            return $player !== $potentialOponent && ($minLevel <= $playerLevel) && ($playerLevel <= $maxLevel);
-        });
+                return $player !== $potentialOponent
+                    && ($minLevel <= $playerLevel)
+                    && ($playerLevel <= $maxLevel);
+            }
+        );
     }
 
-    public function addPlayer(Player $player): void
+    public function addPlayer(Player $player)
     {
         $this->queuingPlayers[] = new QueuingPlayer($player);
     }
 
-    public function addPlayers(Player ...$players): void
+    public function addPlayers(Player ...$players)
     {
         foreach ($players as $player) {
             $this->addPlayer($player);
@@ -43,8 +48,13 @@ class Lobby
 
 class Player
 {
-    public function __construct(protected string $name, protected float $ratio = 400.0)
+    protected $name;
+    protected $ratio;
+
+    public function __construct(string $name, float $ratio = 400.0)
     {
+        $this->name = $name;
+        $this->ratio = $ratio;
     }
 
     public function getName(): string
@@ -70,11 +80,10 @@ class Player
 
 class QueuingPlayer extends Player
 {
-    protected int $range;
+    protected $range;
 
     public function __construct(Player $player, int $range = 1)
     {
-
         parent::__construct($player->getName(), $player->getRatio());
         $this->range = $range;
     }
@@ -84,12 +93,11 @@ class QueuingPlayer extends Player
         return $this->range;
     }
 
-    public function setRange(int $range): void
+    public function setRange(int $range)
     {
         $this->range = $range;
     }
 }
-
 
 $greg = new Player('greg', 400);
 $jade = new Player('jade', 476);
