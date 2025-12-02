@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/src/MatchMaker/Lobby/Lobby.php';
-require_once __DIR__ . '/src/MatchMaker/Player/AbstractPlayer.php';
-require_once __DIR__ . '/src/MatchMaker/Player/Player.php';
-require_once __DIR__ . '/src/MatchMaker/Player/QueuingPlayer.php';
-require_once __DIR__ . '/src/MatchMaker/Player/BlitzPlayer.php';
+spl_autoload_register(function (string $fqcn) {
+    $path = __DIR__ . '/src/' . str_replace('App\\', '', $fqcn) . '.php';
+    $path = str_replace('\\', '/', $path);
+
+    if (file_exists($path)) {
+        require_once $path;
+    }
+});
 
 use App\MatchMaker\Lobby\Lobby;
 use App\MatchMaker\Player\BlitzPlayer;
