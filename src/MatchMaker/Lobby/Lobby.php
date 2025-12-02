@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace App\MatchMaker\Lobby;
 
-use App\MatchMaker\Player\Player;
+use App\MatchMaker\Player\PlayerInterface;
+use App\MatchMaker\Player\QueuingPlayerInterface;
 use App\MatchMaker\Player\QueuingPlayer;
 
-class Lobby
+class Lobby implements LobbyInterface
 {
-    /** @var QueuingPlayer[] */
+    /** @var QueuingPlayerInterface[] */
     public $queuingPlayers = [];
 
-    public function findOponents(QueuingPlayer $player): array
+    public function findOponents(QueuingPlayerInterface $player): array
     {
         $minLevel = round($player->getRatio() / 100);
         $maxLevel = $minLevel + $player->getRange();
 
         return array_filter(
             $this->queuingPlayers,
-            static function (QueuingPlayer $potentialOponent) use ($minLevel, $maxLevel, $player) {
+            static function (QueuingPlayerInterface $potentialOponent) use ($minLevel, $maxLevel, $player) {
                 $playerLevel = round($potentialOponent->getRatio() / 100);
 
                 return $player !== $potentialOponent
@@ -29,12 +30,12 @@ class Lobby
         );
     }
 
-    public function addPlayer(Player $player)
+    public function addPlayer(PlayerInterface $player)
     {
         $this->queuingPlayers[] = new QueuingPlayer($player);
     }
 
-    public function addPlayers(Player ...$players)
+    public function addPlayers(PlayerInterface ...$players)
     {
         foreach ($players as $player) {
             $this->addPlayer($player);

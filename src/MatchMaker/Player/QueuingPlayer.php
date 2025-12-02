@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\MatchMaker\Player;
 
-class QueuingPlayer extends Player
+class QueuingPlayer extends Player implements QueuingPlayerInterface
 {
     /** @var int */
     protected $range = 1;
 
-    public function __construct(AbstractPlayer $player, $range = 1)
+    public function __construct(PlayerInterface $player, $range = 1)
     {
         parent::__construct($player->getName(), $player->getRatio());
         $this->range = (int) $range;
